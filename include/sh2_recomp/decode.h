@@ -1,0 +1,168 @@
+#ifndef SH2_RECOMP_DECODE_H
+#define SH2_RECOMP_DECODE_H
+
+#include <stdbool.h>
+#include <stdint.h>
+
+typedef enum {
+    SH2_OP_UNSUPPORTED,
+    SH2_OP_NOP,
+    SH2_OP_MOV_IMM,
+    SH2_OP_MOV_REG,
+    SH2_OP_MOVT,
+    SH2_OP_ADD_IMM,
+    SH2_OP_ADD_REG,
+    SH2_OP_CMP_EQ_REG,
+    SH2_OP_BRA,
+    SH2_OP_BSR,
+    SH2_OP_BT,
+    SH2_OP_BF,
+    SH2_OP_BT_S,
+    SH2_OP_BF_S,
+    SH2_OP_JMP,
+    SH2_OP_JSR,
+    SH2_OP_RTS,
+    SH2_OP_MOV_L_PC,
+    SH2_OP_MOV_L_POSTINC,
+    SH2_OP_MOV_L_STORE_DISP,
+    SH2_OP_MOV_B_STORE,
+    SH2_OP_MOV_W_STORE,
+    SH2_OP_MOV_B_LOAD_GBR,
+    SH2_OP_MOV_W_STORE_GBR,
+    SH2_OP_LDC_SR,
+    SH2_OP_LDC_GBR,
+    SH2_OP_LDC_VBR,
+    SH2_OP_SUB_REG,
+    SH2_OP_TST_IMM,
+    SH2_OP_CMP_EQ_IMM,
+    SH2_OP_MOV_B_PREDEC,
+    SH2_OP_MOV_W_PREDEC,
+    SH2_OP_MOV_L_PREDEC,
+    SH2_OP_MOV_L_LOAD,
+    SH2_OP_MOV_L_LOAD_DISP,
+    SH2_OP_MOV_L_LOAD_GBR,
+    SH2_OP_MOV_L_STORE_GBR,
+    SH2_OP_MOV_W_LOAD,
+    SH2_OP_MOV_W_POSTINC,
+    SH2_OP_MOV_L_STORE,
+    SH2_OP_MOV_B_STORE_GBR,
+    SH2_OP_AND_REG,
+    SH2_OP_OR_IMM,
+    SH2_OP_EXTU_W,
+    SH2_OP_SWAP_B,
+    SH2_OP_CMP_HS,
+    SH2_OP_SHLR,
+    SH2_OP_DT,
+    SH2_OP_MOV_W_PC,
+    SH2_OP_MOV_B_STORE_R0_DISP,
+    SH2_OP_MOV_W_STORE_R0_DISP,
+    SH2_OP_TST_REG,
+    SH2_OP_BSRF,
+    SH2_OP_STS_L_PR,
+    SH2_OP_LDS_L_PR,
+    SH2_OP_MOV_B_LOAD,
+    SH2_OP_MOV_B_LOAD_R0_DISP,
+    SH2_OP_MOVA,
+    SH2_OP_SHLL2,
+    SH2_OP_EXTU_B,
+    SH2_OP_CMP_PZ,
+    SH2_OP_XOR_IMM,
+    SH2_OP_MOV_L_LOAD_INDEX,
+    SH2_OP_RTE,
+    SH2_OP_SHLL,
+    SH2_OP_MOV_B_LOAD_INDEX,
+    SH2_OP_MOV_W_LOAD_INDEX,
+    SH2_OP_STC_SR,
+    SH2_OP_STC_GBR,
+    SH2_OP_STC_VBR,
+    SH2_OP_SHLR2,
+    SH2_OP_SHLR8,
+    SH2_OP_SHLR16,
+    SH2_OP_AND_IMM,
+    SH2_OP_ROTR,
+    SH2_OP_XOR_REG,
+    SH2_OP_STS_L_MACL,
+    SH2_OP_LDS_L_MACL,
+    SH2_OP_MOV_B_POSTINC,
+    SH2_OP_MULS_W,
+    SH2_OP_STS_MACL,
+    SH2_OP_SHAR,
+    SH2_OP_MULU_W,
+    SH2_OP_SHLL8,
+    SH2_OP_DIV0U,
+    SH2_OP_DIV0S,
+    SH2_OP_DIV1,
+    SH2_OP_ROTCL,
+    SH2_OP_MOV_L_STORE_INDEX,
+    SH2_OP_CMP_PL,
+    SH2_OP_BRAF,
+    SH2_OP_SWAP_W,
+    SH2_OP_LDS_PR,
+    SH2_OP_CMP_GE,
+    SH2_OP_CMP_GT,
+    SH2_OP_LDS_MACH,
+    SH2_OP_SHLL16,
+    SH2_OP_MUL_L,
+    SH2_OP_MOV_B_STORE_INDEX,
+    SH2_OP_MOV_W_STORE_INDEX,
+    SH2_OP_NEG,
+    SH2_OP_MOV_W_LOAD_R0_DISP,
+    SH2_OP_CMP_HI,
+    SH2_OP_EXTS_B,
+    SH2_OP_EXTS_W,
+    SH2_OP_STS_MACH,
+    SH2_OP_ROTL,
+    SH2_OP_OR_REG,
+    SH2_OP_ADDC,
+    SH2_OP_SUBC,
+    SH2_OP_STS_PR,
+    SH2_OP_CLRMAC,
+    SH2_OP_MAC_W,
+    SH2_OP_XTRCT,
+    SH2_OP_CLRT,
+    SH2_OP_SETT,
+    SH2_OP_NOT,
+    SH2_OP_DMULS_L,
+    SH2_OP_DMULU_L,
+    SH2_OP_MAC_L,
+    SH2_OP_LDC_L_SR,
+    SH2_OP_LDC_L_GBR,
+    SH2_OP_LDC_L_VBR,
+    SH2_OP_STC_L_SR,
+    SH2_OP_STC_L_GBR,
+    SH2_OP_STC_L_VBR,
+    SH2_OP_LDS_MACL,
+    SH2_OP_LDS_L_MACH,
+    SH2_OP_STS_L_MACH,
+    SH2_OP_TST_B_IMM,
+    SH2_OP_AND_B_IMM,
+    SH2_OP_XOR_B_IMM,
+    SH2_OP_OR_B_IMM,
+    SH2_OP_MOV_W_LOAD_GBR,
+    SH2_OP_ROTCR,
+    SH2_OP_TAS_B,
+    SH2_OP_SLEEP
+} Sh2Opcode;
+
+typedef struct {
+    Sh2Opcode opcode;
+    uint8_t rn;
+    uint8_t rm;
+    int16_t immediate;
+    int16_t displacement;
+    bool delayed;
+} Sh2Instruction;
+
+/* Decode a host-order instruction word. Relative branches use a signed byte
+ * displacement from the instruction address plus four. Memory offsets are
+ * also expressed in bytes. Unused fields are
+ * zero. UNSUPPORTED covers both unimplemented and unrecognized encodings. */
+#ifdef __cplusplus
+extern "C" {
+#endif
+Sh2Instruction sh2_decode(uint16_t word);
+#ifdef __cplusplus
+}
+#endif
+
+#endif
