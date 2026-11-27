@@ -1,5 +1,7 @@
 # SH-2 recompilation core
 
+Current licensing and the grant for existing owner contributions are documented in [LICENSE-SCOPE.md](LICENSE-SCOPE.md).
+
 A platform-neutral C11 core for static SH-2 recompilation. It implements
 power-on vector reads and a first instruction subset covering integer and
 control operations, selected memory transfers and delayed branches. Board
